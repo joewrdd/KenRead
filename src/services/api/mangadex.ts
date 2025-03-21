@@ -1,6 +1,27 @@
 import axios from "axios";
 
-const BASE_URL = "https://api.mangadex.org";
+// Base URL will be different depending on the environment
+const isDevelopment = process.env.NODE_ENV === "development";
+// Direct API URL for development, proxy API route for production
+const BASE_URL = isDevelopment ? "https://api.mangadex.org" : "/api/mangadex";
+
+// Function to format API calls based on environment
+const formatApiCall = (path: string, params?: Record<string, unknown>) => {
+  if (isDevelopment) {
+    // In development, use direct API calls
+    return { url: `${BASE_URL}/${path}`, params };
+  } else {
+    // In production, use our proxy API route
+    // Add the path as a query parameter
+    return {
+      url: BASE_URL,
+      params: {
+        path,
+        ...params,
+      },
+    };
+  }
+};
 
 // Define types for manga data
 export interface MangaData {
@@ -64,18 +85,18 @@ const mangadexApi = {
   // Get trending manga
   getTrendingManga: async (limit = 20, offset = 0) => {
     try {
-      const response = await axios.get(`${BASE_URL}/manga`, {
-        params: {
-          limit,
-          offset,
-          includes: ["cover_art", "author", "artist"],
-          order: {
-            followedCount: "desc",
-          },
-          contentRating: ["safe", "suggestive", "erotica"],
-          availableTranslatedLanguage: ["en"],
+      const { url, params } = formatApiCall("manga", {
+        limit,
+        offset,
+        includes: ["cover_art", "author", "artist"],
+        order: {
+          followedCount: "desc",
         },
+        contentRating: ["safe", "suggestive", "erotica"],
+        availableTranslatedLanguage: ["en"],
       });
+
+      const response = await axios.get(url, { params });
       return response.data;
     } catch (error) {
       console.error("Error fetching trending manga:", error);
@@ -86,18 +107,18 @@ const mangadexApi = {
   // Get latest manga updates
   getLatestManga: async (limit = 20, offset = 0) => {
     try {
-      const response = await axios.get(`${BASE_URL}/manga`, {
-        params: {
-          limit,
-          offset,
-          includes: ["cover_art", "author", "artist"],
-          order: {
-            updatedAt: "desc",
-          },
-          contentRating: ["safe", "suggestive", "erotica"],
-          availableTranslatedLanguage: ["en"],
+      const { url, params } = formatApiCall("manga", {
+        limit,
+        offset,
+        includes: ["cover_art", "author", "artist"],
+        order: {
+          updatedAt: "desc",
         },
+        contentRating: ["safe", "suggestive", "erotica"],
+        availableTranslatedLanguage: ["en"],
       });
+
+      const response = await axios.get(url, { params });
       return response.data;
     } catch (error) {
       console.error("Error fetching latest manga:", error);
@@ -108,16 +129,16 @@ const mangadexApi = {
   // Search manga by title
   searchManga: async (query: string, limit = 20, offset = 0) => {
     try {
-      const response = await axios.get(`${BASE_URL}/manga`, {
-        params: {
-          title: query,
-          limit,
-          offset,
-          includes: ["cover_art", "author", "artist"],
-          contentRating: ["safe", "suggestive", "erotica"],
-          availableTranslatedLanguage: ["en"],
-        },
+      const { url, params } = formatApiCall("manga", {
+        title: query,
+        limit,
+        offset,
+        includes: ["cover_art", "author", "artist"],
+        contentRating: ["safe", "suggestive", "erotica"],
+        availableTranslatedLanguage: ["en"],
       });
+
+      const response = await axios.get(url, { params });
       return response.data;
     } catch (error) {
       console.error("Error searching manga:", error);
@@ -128,11 +149,11 @@ const mangadexApi = {
   // Get manga details by ID
   getMangaById: async (mangaId: string) => {
     try {
-      const response = await axios.get(`${BASE_URL}/manga/${mangaId}`, {
-        params: {
-          includes: ["cover_art", "author", "artist"],
-        },
+      const { url, params } = formatApiCall(`manga/${mangaId}`, {
+        includes: ["cover_art", "author", "artist"],
       });
+
+      const response = await axios.get(url, { params });
       return response.data;
     } catch (error) {
       console.error(`Error fetching manga details for ID ${mangaId}:`, error);
@@ -143,16 +164,16 @@ const mangadexApi = {
   // Get chapters for a manga
   getMangaChapters: async (mangaId: string, limit = 100, offset = 0) => {
     try {
-      const response = await axios.get(`${BASE_URL}/manga/${mangaId}/feed`, {
-        params: {
-          limit,
-          offset,
-          translatedLanguage: ["en"],
-          order: {
-            chapter: "desc",
-          },
+      const { url, params } = formatApiCall(`manga/${mangaId}/feed`, {
+        limit,
+        offset,
+        translatedLanguage: ["en"],
+        order: {
+          chapter: "desc",
         },
       });
+
+      const response = await axios.get(url, { params });
       return response.data;
     } catch (error) {
       console.error(`Error fetching chapters for manga ID ${mangaId}:`, error);
@@ -163,9 +184,9 @@ const mangadexApi = {
   // Get chapter pages
   getChapterPages: async (chapterId: string) => {
     try {
-      const response = await axios.get(
-        `${BASE_URL}/at-home/server/${chapterId}`
-      );
+      const { url, params } = formatApiCall(`at-home/server/${chapterId}`);
+
+      const response = await axios.get(url, { params });
       return response.data;
     } catch (error) {
       console.error(`Error fetching pages for chapter ID ${chapterId}:`, error);
@@ -176,7 +197,9 @@ const mangadexApi = {
   // Get chapter details by ID
   getChapterById: async (chapterId: string) => {
     try {
-      const response = await axios.get(`${BASE_URL}/chapter/${chapterId}`);
+      const { url, params } = formatApiCall(`chapter/${chapterId}`);
+
+      const response = await axios.get(url, { params });
       return response.data;
     } catch (error) {
       console.error(
