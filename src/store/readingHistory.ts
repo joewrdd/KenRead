@@ -29,9 +29,14 @@ export interface ReadingHistoryState {
   clearStore: () => void;
 }
 
+// Helper to check if we're in a browser environment
+const isBrowser = typeof window !== "undefined";
+
 // Custom storage to handle local persistence
 const customStorage: PersistStorage<ReadingHistoryState> = {
   getItem: (name) => {
+    if (!isBrowser) return null;
+
     const str = localStorage.getItem(name);
     if (!str) return null;
 
@@ -40,10 +45,13 @@ const customStorage: PersistStorage<ReadingHistoryState> = {
     return { state };
   },
   setItem: (name, value) => {
+    if (!isBrowser) return;
+
     // No need for special serialization since we're using arrays
     localStorage.setItem(name, JSON.stringify(value));
   },
   removeItem: (name) => {
+    if (!isBrowser) return;
     localStorage.removeItem(name);
   },
 };

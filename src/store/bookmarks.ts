@@ -20,9 +20,14 @@ interface BookmarkState {
   clearStore: () => void;
 }
 
+// Helper to check if we're in a browser environment
+const isBrowser = typeof window !== "undefined";
+
 // Use a simpler approach to handle Set serialization
 const customStorage: PersistStorage<BookmarkState> = {
   getItem: (name) => {
+    if (!isBrowser) return null;
+
     try {
       const storedState = localStorage.getItem(name);
       if (!storedState) return null;
@@ -42,6 +47,8 @@ const customStorage: PersistStorage<BookmarkState> = {
     }
   },
   setItem: (name, value) => {
+    if (!isBrowser) return;
+
     try {
       const { state, ...rest } = value;
       const serializedValue = {
@@ -58,6 +65,7 @@ const customStorage: PersistStorage<BookmarkState> = {
     }
   },
   removeItem: (name) => {
+    if (!isBrowser) return;
     localStorage.removeItem(name);
   },
 };

@@ -6,7 +6,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
-import { db } from "@/lib/firebase";
+import { db } from "@/lib/firebase-client";
 
 // User reading history interface
 export interface ReadingHistoryItem {

@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import mangadexApi, { MangaData } from "@/services/api/mangadex";
 import { MangaCard } from "@/components/ui/MangaCard";
 import { Skeleton } from "@/components/ui/skeleton";
 
-export default function SearchPage() {
+function SearchResults() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
 
@@ -72,5 +72,32 @@ export default function SearchPage() {
         </div>
       )}
     </div>
+  );
+}
+
+// Loading fallback component
+function SearchLoading() {
+  return (
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold">Search</h1>
+      <p className="text-muted-foreground">Loading search functionality...</p>
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+        {Array.from({ length: 12 }).map((_, index) => (
+          <div key={index} className="space-y-3">
+            <Skeleton className="aspect-[2/3] w-full rounded" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<SearchLoading />}>
+      <SearchResults />
+    </Suspense>
   );
 }
