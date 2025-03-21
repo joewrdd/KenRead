@@ -46,18 +46,91 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center px-4 md:px-6">
-        <div className="mr-4 hidden md:flex md:flex-1 lg:mr-8">
+      <div className="flex h-16 items-center justify-between px-4 md:px-6 max-w-full w-full">
+        {/* Left side with logo and navigation */}
+        <div className="flex items-center">
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="mr-2 md:hidden">
+                <Menu className="h-5 w-5" />
+                <span className="sr-only">Toggle menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left">
+              <Link
+                href="/"
+                className="flex items-center space-x-2 font-bold text-xl mb-6"
+              >
+                <div className="flex items-center justify-center bg-primary text-primary-foreground rounded-lg p-1.5">
+                  <BookOpen className="h-5 w-5" />
+                </div>
+                <span className="text-primary font-extrabold">KenRead</span>
+              </Link>
+              <nav className="flex flex-col space-y-4">
+                <Link
+                  href="/latest"
+                  className="block py-2 transition-colors hover:text-primary"
+                >
+                  Latest
+                </Link>
+                <Link
+                  href="/popular"
+                  className="block py-2 transition-colors hover:text-primary"
+                >
+                  Popular
+                </Link>
+                <Link
+                  href="/bookmarks"
+                  className="block py-2 transition-colors hover:text-primary"
+                >
+                  Bookmarks
+                </Link>
+                <Link
+                  href="/history"
+                  className="block py-2 transition-colors hover:text-primary"
+                >
+                  History
+                </Link>
+                {!user ? (
+                  <>
+                    <Link
+                      href="/auth/login"
+                      className="block py-2 transition-colors hover:text-primary"
+                    >
+                      Sign in
+                    </Link>
+                    <Link
+                      href="/auth/signup"
+                      className="block py-2 transition-colors hover:text-primary"
+                    >
+                      Sign up
+                    </Link>
+                  </>
+                ) : (
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center py-2 text-sm font-medium text-left transition-colors hover:text-primary"
+                    disabled={isLoggingOut}
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    {isLoggingOut ? "Signing out..." : "Sign out"}
+                  </button>
+                )}
+              </nav>
+            </SheetContent>
+          </Sheet>
+
           <Link
             href="/"
-            className="mr-8 flex items-center space-x-2 font-bold text-xl"
+            className="flex items-center space-x-2 font-bold text-xl"
           >
             <div className="flex items-center justify-center bg-primary text-primary-foreground rounded-lg p-1.5">
               <BookOpen className="h-5 w-5" />
             </div>
             <span className="text-primary font-extrabold">KenRead</span>
           </Link>
-          <nav className="flex items-center space-x-8 text-sm font-medium">
+
+          <nav className="ml-8 hidden md:flex items-center space-x-8 text-sm font-medium">
             <Link
               href="/latest"
               className="transition-colors hover:text-primary"
@@ -85,81 +158,11 @@ export function Navbar() {
           </nav>
         </div>
 
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">Toggle menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left">
-            <Link
-              href="/"
-              className="flex items-center space-x-2 font-bold text-xl mb-6"
-            >
-              <div className="flex items-center justify-center bg-primary text-primary-foreground rounded-lg p-1.5">
-                <BookOpen className="h-5 w-5" />
-              </div>
-              <span className="text-primary font-extrabold">KenRead</span>
-            </Link>
-            <nav className="flex flex-col space-y-4">
-              <Link
-                href="/latest"
-                className="block py-2 transition-colors hover:text-primary"
-              >
-                Latest
-              </Link>
-              <Link
-                href="/popular"
-                className="block py-2 transition-colors hover:text-primary"
-              >
-                Popular
-              </Link>
-              <Link
-                href="/bookmarks"
-                className="block py-2 transition-colors hover:text-primary"
-              >
-                Bookmarks
-              </Link>
-              <Link
-                href="/history"
-                className="block py-2 transition-colors hover:text-primary"
-              >
-                History
-              </Link>
-              {!user ? (
-                <>
-                  <Link
-                    href="/auth/login"
-                    className="block py-2 transition-colors hover:text-primary"
-                  >
-                    Sign in
-                  </Link>
-                  <Link
-                    href="/auth/signup"
-                    className="block py-2 transition-colors hover:text-primary"
-                  >
-                    Sign up
-                  </Link>
-                </>
-              ) : (
-                <button
-                  onClick={handleLogout}
-                  className="flex items-center py-2 text-sm font-medium text-left transition-colors hover:text-primary"
-                  disabled={isLoggingOut}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  {isLoggingOut ? "Signing out..." : "Sign out"}
-                </button>
-              )}
-            </nav>
-          </SheetContent>
-        </Sheet>
-
-        <div className="flex flex-1 items-center justify-end space-x-3">
+        {/* Right side with search, auth, and theme toggle */}
+        <div className="flex items-center space-x-3">
           <form
             onSubmit={handleSearch}
-            className="w-full max-w-sm md:max-w-md mr-2 relative"
+            className="hidden sm:flex w-full max-w-xs md:max-w-sm lg:max-w-md relative"
           >
             <Input
               type="search"
@@ -228,6 +231,17 @@ export function Navbar() {
             <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
             <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
             <span className="sr-only">Toggle theme</span>
+          </Button>
+
+          {/* Mobile search button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-lg sm:hidden"
+            onClick={() => router.push("/search")}
+          >
+            <Search className="h-5 w-5" />
+            <span className="sr-only">Search</span>
           </Button>
         </div>
       </div>
