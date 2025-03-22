@@ -97,13 +97,13 @@ export function Navbar() {
                       href="/auth/login"
                       className="block py-2 transition-colors hover:text-primary"
                     >
-                      Sign in
+                      Sign In
                     </Link>
                     <Link
                       href="/auth/signup"
                       className="block py-2 transition-colors hover:text-primary"
                     >
-                      Sign up
+                      Sign Up
                     </Link>
                   </>
                 ) : (
@@ -185,10 +185,10 @@ export function Navbar() {
           {!user ? (
             <div className="hidden md:flex items-center space-x-2">
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/auth/login">Sign in</Link>
+                <Link href="/auth/login">Sign In</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link href="/auth/signup">Sign up</Link>
+                <Link href="/auth/signup">Sign Up</Link>
               </Button>
             </div>
           ) : (
